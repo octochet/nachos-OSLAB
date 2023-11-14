@@ -242,6 +242,14 @@ PrintUCString:
 	j	$31
 	.end PrintUCString
 
+	.globl Sleep
+	.ent	Sleep
+Sleep:
+	addiu $2,$0,SC_Sleep
+	syscall
+	j	$31
+	.end Sleep
+
 	.globl CreateFile
 	.ent	CreateFile
 CreateFile:

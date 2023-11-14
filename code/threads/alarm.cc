@@ -11,6 +11,7 @@
 #include "copyright.h"
 #include "alarm.h"
 #include "main.h"
+#include "thread.h"
 
 //----------------------------------------------------------------------
 // Alarm::Alarm
@@ -20,7 +21,18 @@
 //		occur at random, instead of fixed, intervals.
 //----------------------------------------------------------------------
 
-Alarm::Alarm(bool doRandom) { timer = new Timer(doRandom, this); }
+Alarm::Alarm(bool doRandom) { 
+    timer = new Timer(doRandom, this);
+    sleepingProcess = NULL;
+}
+
+void Alarm::WaitUntil(int x){
+	struct sleepDetails* sleepProcess = (struct sleepDetails*)malloc(sizeof(struct sleepDetails));
+	sleepProcess->nextProcess = sleepingProcess;
+	sleepProcess->timeLeft = x;
+	sleepProcess->process = kernel->currentThread;
+	sleepingProcess = sleepProcess; // make this the head
+}
 
 //----------------------------------------------------------------------
 // Alarm::CallBack
@@ -41,8 +53,29 @@ Alarm::Alarm(bool doRandom) { timer = new Timer(doRandom, this); }
 //----------------------------------------------------------------------
 
 void Alarm::CallBack() {
+    struct sleepDetails* temp = sleepingProcess;
+    struct sleepDetails* prev = NULL;
+    while(temp != NULL){
+		temp->timeLeft--;
+		if(temp->timeLeft == 0){
+			kernel->scheduler->ReadyToRun(temp->process);
+			if(prev != NULL){
+				prev->nextProcess = temp->nextProcess;
+			} else{
+				sleepingProcess = temp->nextProcess;
+			}
+			struct sleepDetails* temp1 = temp;
+			temp = temp->nextProcess;
+			free(temp1);
+		} else{
+			prev = temp;
+			temp = temp->nextProcess;
+		}
+    }
+    free(temp);
+
     Interrupt *interrupt = kernel->interrupt;
-    MachineStatus status = interrupt->getStatus();
+    MachineStatus status = interrupt->getStatus();	
 
     if (status != IdleMode) {
         interrupt->YieldOnReturn();

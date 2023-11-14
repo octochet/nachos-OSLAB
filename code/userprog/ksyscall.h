@@ -256,4 +256,12 @@ int SysSignal(char* name) {
 
 int SysGetPid() { return kernel->currentThread->processID; }
 
+void SysSleep(int time) {
+    kernel->alarm->WaitUntil(time);
+    auto currentState = kernel->interrupt->getLevel();
+    kernel->interrupt->SetLevel(IntOff);
+    kernel->currentThread->Sleep(false);
+    kernel->interrupt->SetLevel(currentState);
+}
+
 #endif /* ! __USERPROG_KSYSCALL_H__ */

@@ -403,6 +403,12 @@ void handle_SC_GetPid() {
     return move_program_counter();
 }
 
+void handle_SC_Sleep() {
+    int sleepTime = kernel->machine->ReadRegister(4);
+    SysSleep(sleepTime);
+    return move_program_counter();
+}
+
 void ExceptionHandler(ExceptionType which) {
     int type = kernel->machine->ReadRegister(2);
 
@@ -472,6 +478,8 @@ void ExceptionHandler(ExceptionType which) {
                     return handle_SC_GetPid();
                 case SC_PrintUCString:
                     return handle_SC_PrintUCString();
+                case SC_Sleep:
+                    return handle_SC_Sleep();
                 /**
                  * Handle all not implemented syscalls
                  * If you want to write a new handler for syscall:
