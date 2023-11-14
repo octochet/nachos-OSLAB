@@ -49,6 +49,8 @@
 #define SC_Signal 53
 #define SC_GetPid 54
 
+#define SC_PrintUCString 55
+
 #ifndef IN_ASM
 
 /* The system call interface.  These are the operations the Nachos
@@ -83,6 +85,8 @@ int RandomNum();
 void ReadString(char *buffer, int length);
 
 void PrintString(char *buffer);
+
+void PrintUCString(char *buffer);
 
 /* Address space control operations: Exit, Exec, Execv, and Join */
 

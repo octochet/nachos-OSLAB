@@ -1,0 +1,10 @@
+LAB 1: PrintUCString syscall
+1. userprog/syscall.h : add definition + syscall number (#define SC_... & void PrintUCString(...)...)
+2. code/test/start.s : add interrupt handler 
+3. userprog/exception.cc : add exception handler (will contain the function sysPrintUCString) + add case in switch-case for handler (handle_SC_PrintUCString(...))
+4. userprog/ksyscall.h : add the definition of function (sysPrintUCString, actual logic here). 
+5. If added new test file: here mytest.c:
+    5.1 test/Makefile: add mytest in programs and add definitions
+    5.2 make clean in code/build.linux and code/test
+    5.2 change build_test.sh to include the command:- ../build.linux/nachos -x mytest
+6. run bash build_nachos and bash build_test.
